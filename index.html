@@ -20,9 +20,9 @@
   --muted:    #6b8299;
   --ghost:    #94aabf;
   --white:    #f0f4f8;
-  --accent:   #e07b28;
-  --accent-dk:#b85f15;
-  --accent-lt:#f5a55a;
+  --accent:   #1565C0;
+  --accent-dk:#0d4fa0;
+  --accent-lt:#4a90d9;
   --green:    #2ecc71;
   --red:      #e74c3c;
   --text-hi:  #e8f0f8;
@@ -68,7 +68,7 @@ html, body {
   align-items: center;
   gap: 16px;
   padding: 0 20px;
-  height: 52px;
+  height: 50px;
   background: var(--navy-mid);
   border-bottom: 1px solid var(--navy-bdr);
   flex-shrink: 0;
@@ -141,7 +141,7 @@ html, body {
   color: var(--accent-lt);
   border-color: var(--accent);
 }
-.btn-outline:hover { background: rgba(224,123,40,0.1); }
+.btn-outline:hover { background: rgba(21,101,192,0.1); }
 
 /* ============================================================
    MAIN LAYOUT
@@ -154,7 +154,7 @@ html, body {
 
 /* LEFT PANEL — Catalog */
 #panel-catalog {
-  width: 320px;
+  width: 310px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -174,7 +174,7 @@ html, body {
 
 /* RIGHT PANEL — Customer + Actions */
 #panel-right {
-  width: 280px;
+  width: 270px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -213,6 +213,7 @@ html, body {
   padding: 10px 14px;
   border-bottom: 1px solid var(--navy-bdr);
   flex-shrink: 0;
+  background: var(--navy-mid);
 }
 
 #catalog-search input {
@@ -238,7 +239,7 @@ html, body {
 /* Category group */
 .cat-group { border-bottom: 1px solid rgba(42,63,87,0.5); transition: opacity 0.15s; background: var(--navy-mid); }
 .cat-group.dragging { opacity: 0.4; }
-.cat-group.drag-over { box-shadow: 0 -2px 0 var(--accent) inset; background: rgba(224,123,40,0.05); }
+.cat-group.drag-over { box-shadow: 0 -2px 0 var(--accent) inset; background: rgba(21,101,192,0.05); }
 .cat-body { background: var(--navy-mid); }
 .subcat-group { padding: 4px 0; background: var(--navy-mid); }
 .subcat-items { display: none; padding: 2px 0 6px; background: var(--navy-mid); }
@@ -278,7 +279,7 @@ html, body {
 }
 .cat-header .cat-count.has-sel {
   color: var(--accent-lt);
-  background: rgba(224,123,40,0.18);
+  background: rgba(21,101,192,0.18);
 }
 
 .cat-header .cat-chevron {
@@ -365,7 +366,7 @@ html, body {
   transition: background 0.1s;
 }
 .item-row:hover { background: rgba(30,45,64,0.6); }
-.item-row.selected { background: rgba(224,123,40,0.08); }
+.item-row.selected { background: rgba(21,101,192,0.08); }
 
 .item-row input[type="checkbox"] {
   flex-shrink: 0;
@@ -533,6 +534,7 @@ html, body {
 
 #view-preview.active { display: block; }
 #view-selected.active { display: block; }
+#view-selected { background: var(--navy); }
 
 /* ── PAGE CONTAINER ── */
 #line-sheet {
@@ -548,16 +550,15 @@ html, body {
 /* ── SINGLE LETTER PAGE (816 × 1056px @ 96dpi) ── */
 .sheet-page {
   width: 816px;
-  height: 1056px;
+  min-height: 1056px;
   background: #ffffff;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.45);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.22), 0 8px 32px rgba(0,0,0,0.18);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
   position: relative;
   font-family: var(--font-sans);
   color: #1a2332;
-  overflow: hidden;
 }
 
 /* Gap between pages in preview */
@@ -742,35 +743,44 @@ html, body {
 /* ── CUSTOMER INFO ROW ── */
 .sheet-customer {
   display: flex;
-  align-items: stretch;
+  align-items: center;
   background: #f0f4fa;
-  border-bottom: 3px solid #C4A84A;
+  border-bottom: 2px solid #C4A84A;
 }
 .cust-field {
   flex: 1;
-  padding: 10px 18px;
+  padding: 6px 16px;
   border-right: 1px solid #dde4ed;
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  min-width: 0;
 }
 .cust-field:last-child { border-right: none; }
 .cust-label {
   font-family: var(--font-mono);
-  font-size: 8px;
-  letter-spacing: 0.12em;
+  font-size: 7.5px;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #1C2D4F;
-  font-weight: 700;
-  margin-bottom: 3px;
+  color: #9aaabb;
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 .cust-value {
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
   color: #1C2D4F;
-  line-height: 1.35;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .cust-value-sm {
-  font-size: 10px;
-  color: #5a6b7b;
-  margin-top: 1px;
+  font-size: 9px;
+  color: #8a9bb0;
+  margin-left: 4px;
+  white-space: nowrap;
 }
 
 /* ── SHEET BODY ── */
@@ -919,7 +929,7 @@ html, body {
   position: relative;
   margin-bottom: 8px;
 }
-.logo-upload-area:hover { border-color: var(--accent); background: rgba(224,123,40,0.04); }
+.logo-upload-area:hover { border-color: var(--accent); background: rgba(21,101,192,0.04); }
 .logo-upload-area input[type="file"] {
   position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
 }
@@ -1018,8 +1028,8 @@ option { background: var(--navy-mid); }
   transition: all 0.15s;
   line-height: 1.3;
 }
-.preset-btn:hover { border-color: var(--accent); color: var(--accent-lt); background: rgba(224,123,40,0.08); }
-.preset-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(224,123,40,0.12); }
+.preset-btn:hover { border-color: var(--accent); color: var(--accent-lt); background: rgba(21,101,192,0.08); }
+.preset-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(21,101,192,0.12); }
 
 /* ACTIONS */
 .action-row {
@@ -1075,8 +1085,8 @@ option { background: var(--navy-mid); }
   transition: all 0.12s;
   white-space: nowrap;
 }
-.ind-btn:hover { border-color: var(--accent); color: var(--accent-lt); background: rgba(224,123,40,0.08); }
-.ind-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(224,123,40,0.14); }
+.ind-btn:hover { border-color: var(--accent); color: var(--accent-lt); background: rgba(21,101,192,0.08); }
+.ind-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(21,101,192,0.14); }
 
 /* ── CATALOG TYPE DIVIDERS ── */
 .cat-section-divider {
@@ -1100,6 +1110,19 @@ option { background: var(--navy-mid); }
   flex: 1;
   height: 1px;
   background: var(--navy-bdr);
+}
+
+
+/* ── THEME TRANSITION ── */
+#topbar, #panel-catalog, #panel-center, #panel-right,
+.panel-hdr, .cat-header, .cat-group, .cat-body,
+.subcat-header, .subcat-group, .subcat-items,
+.item-row, .field-input, .field-select, .field-textarea,
+.btn, .preset-btn, .ind-btn, #industry-bar,
+.right-section, .tab-btn, #center-tabs,
+.selected-group-header, .selected-item-card,
+.stat-row, .cat-section-divider {
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 /* ============================================================
@@ -1131,6 +1154,7 @@ option { background: var(--navy-mid); }
   .sheet-page {
     width: 100%;
     height: 100vh;
+    min-height: unset;
     box-shadow: none;
     page-break-after: always;
     break-after: page;
@@ -1138,14 +1162,7 @@ option { background: var(--navy-mid); }
   }
   .sheet-page:last-child { page-break-after: avoid; break-after: avoid; }
   .sheet-page-gap { display: none; }
-  .sheet-header,
-  .sheet-cont-header,
-  .sheet-stripe,
-  .sheet-customer,
-  .sheet-cat-box-header,
-  .sheet-footer,
-  .sheet-why-header,
-  .sheet-intro { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .sheet-page * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   @page { margin: 0; size: letter; }
 }
 
@@ -1171,6 +1188,258 @@ option { background: var(--navy-mid); }
   white-space: nowrap;
 }
 #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ============================================================
+   LIGHT MODE — clean white UI
+   ============================================================ */
+body.light-mode {
+  background: #f0f4f8;
+  color: #0d1f35;
+}
+
+/* App shell */
+body.light-mode #app { background: #f0f4f8; }
+body.light-mode #topbar {
+  background: #ffffff;
+  border-bottom-color: #d0dcea;
+}
+body.light-mode #topbar .brand strong { color: var(--accent); }
+body.light-mode #topbar .brand span { color: #7a9abf; }
+body.light-mode #topbar .selection-summary { color: #7a9abf; }
+body.light-mode #topbar .selection-summary span { color: var(--accent); }
+body.light-mode #topbar .divider { background: #d0dcea; }
+body.light-mode #topbar .brand span { color: #5a7a9a; }
+body.light-mode #topbar .selection-summary { color: #5a7a9a; }
+body.light-mode #topbar .selection-summary span { color: var(--accent); font-weight: 600; }
+body.light-mode #topbar .divider { background: #d0dcea; }
+
+/* Panels */
+body.light-mode #panel-catalog {
+  background: #ffffff;
+  border-right-color: #d0dcea;
+}
+body.light-mode #panel-center { background: #f0f4f8; }
+body.light-mode #panel-right {
+  background: #ffffff;
+  border-left-color: #d0dcea;
+}
+body.light-mode .panel-hdr {
+  background: #f4f7fc;
+  border-bottom-color: #d0dcea;
+}
+body.light-mode .panel-hdr h3 { color: #7a9abf; }
+
+/* Right panel fields */
+body.light-mode .right-section { border-bottom-color: #e0e8f4; }
+body.light-mode .right-section h4 { color: #7a9abf; }
+body.light-mode .field-label { color: #5a7a9a; }
+body.light-mode .field-input,
+body.light-mode .field-select,
+body.light-mode .field-textarea {
+  background: #f8fafc;
+  border-color: #c8d8ea;
+  color: #0d1f35;
+}
+body.light-mode .field-input::placeholder,
+body.light-mode .field-textarea::placeholder { color: #a0b8cc; }
+body.light-mode .field-input:focus,
+body.light-mode .field-select:focus,
+body.light-mode .field-textarea:focus { border-color: var(--accent); }
+body.light-mode select option { background: #ffffff; color: #0d1f35; }
+
+/* Buttons */
+body.light-mode .btn-ghost {
+  background: #f0f4f8;
+  color: #3a5a7a;
+  border-color: #c8d8ea;
+}
+body.light-mode .btn-ghost:hover {
+  background: #e0e8f4;
+  color: #0d1f35;
+  border-color: #a0b8cc;
+}
+body.light-mode .btn-outline {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: transparent;
+}
+body.light-mode .btn-outline:hover { background: rgba(21,101,192,0.08); }
+
+/* Catalog search */
+body.light-mode #catalog-search { background: #ffffff; border-bottom-color: #d0dcea; }
+body.light-mode #catalog-search input {
+  background: #f0f4f8;
+  border-color: #c8d8ea;
+  color: #0d1f35;
+}
+body.light-mode #catalog-search input::placeholder { color: #a0b8cc; }
+
+/* Industry bar */
+body.light-mode #industry-bar { border-bottom-color: #d0dcea; }
+body.light-mode .ind-bar-label { color: #7a9abf; }
+body.light-mode .ind-btn {
+  background: #f0f4f8;
+  border-color: #c8d8ea;
+  color: #3a5a7a;
+}
+body.light-mode .ind-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(21,101,192,0.06);
+}
+body.light-mode .ind-btn.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(21,101,192,0.10);
+}
+
+/* Catalog tree */
+body.light-mode .cat-group,
+body.light-mode .cat-body,
+body.light-mode .subcat-group,
+body.light-mode .subcat-items {
+  background: #ffffff;
+  border-color: #e0e8f4;
+}
+body.light-mode .cat-group { border-bottom-color: #e0e8f4; }
+body.light-mode .cat-section-divider { background: #f4f7fc; }
+body.light-mode .cat-section-divider span { color: var(--accent); }
+body.light-mode .cat-section-divider::after { background: #d0dcea; }
+
+body.light-mode .cat-header { background: #f4f7fc; }
+body.light-mode .cat-header:hover { background: #e8f0fa; }
+body.light-mode .cat-header .cat-name { color: #0d1f35; font-weight: 700; }
+body.light-mode .cat-header .cat-icon { color: #3a5a7a; }
+body.light-mode .cat-header .cat-drag { color: #a0b8cc; }
+body.light-mode .cat-header .cat-chevron { color: #7a9abf; }
+body.light-mode .cat-header .cat-count {
+  background: #e0e8f4;
+  color: #5a7a9a;
+}
+body.light-mode .cat-header .cat-count.has-sel {
+  background: rgba(21,101,192,0.15);
+  color: var(--accent);
+}
+body.light-mode .cat-header .cat-cb { accent-color: var(--accent); }
+body.light-mode .cat-group.drag-over {
+  box-shadow: 0 -2px 0 var(--accent) inset;
+  background: rgba(21,101,192,0.04);
+}
+
+body.light-mode .subcat-header { background: #f8fafc; }
+body.light-mode .subcat-header:hover { background: #e8f0fa; }
+body.light-mode .subcat-header .subcat-name { color: #5a7a9a; }
+body.light-mode .subcat-header .subcat-chevron { color: #a0b8cc; }
+body.light-mode .subcat-header .sub-cb { accent-color: var(--accent); }
+
+body.light-mode .item-row:hover { background: #edf4ff; }
+body.light-mode .item-row.selected { background: rgba(21,101,192,0.06); }
+body.light-mode .item-row input[type="checkbox"] { accent-color: var(--accent); }
+body.light-mode .item-row .item-name { color: #0d1f35; }
+body.light-mode .item-row .item-desc { color: #7a9abf; }
+
+/* Center tabs */
+body.light-mode #center-tabs {
+  background: #f4f7fc;
+  border-bottom-color: #d0dcea;
+}
+body.light-mode .tab-btn { color: #7a9abf; }
+body.light-mode .tab-btn:hover { color: #0d1f35; }
+body.light-mode .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* Selected items view */
+body.light-mode #view-selected { background: #f8fafc; }
+body.light-mode .empty-state { color: #a0b8cc; }
+body.light-mode .selected-group-header {
+  background: #f0f4f8;
+  border-color: #d0dcea;
+}
+body.light-mode .selected-group-header .g-name { color: #0d1f35; }
+body.light-mode .selected-group-header .g-count { color: var(--accent); }
+body.light-mode .selected-item-card { border-left-color: #d0dcea; }
+body.light-mode .selected-item-card:hover { border-left-color: var(--accent); }
+body.light-mode .selected-item-card .si-name { color: #0d1f35; }
+body.light-mode .selected-item-card .si-subcat { color: #7a9abf; }
+body.light-mode .selected-item-card .si-remove { color: #a0b8cc; }
+body.light-mode #view-selected .empty-state { color: #a0b8cc; }
+
+/* Preview background */
+body.light-mode #view-preview { background: #dce6f0; }
+
+/* Presets */
+body.light-mode .preset-btn {
+  background: #f0f4f8;
+  border-color: #c8d8ea;
+  color: #3a5a7a;
+}
+body.light-mode .preset-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(21,101,192,0.06);
+}
+body.light-mode .preset-btn.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(21,101,192,0.10);
+}
+
+/* Stats */
+body.light-mode .stat-row .stat-label { color: #7a9abf; }
+body.light-mode .stat-row .stat-val { color: #0d1f35; }
+body.light-mode .stat-row .stat-val.accent { color: var(--accent); }
+
+/* Logo upload */
+body.light-mode .logo-upload-area {
+  border-color: #c8d8ea;
+  background: transparent;
+}
+body.light-mode .logo-upload-area:hover {
+  border-color: var(--accent);
+  background: rgba(21,101,192,0.04);
+}
+body.light-mode .logo-preview-wrap {
+  background: #f0f4f8;
+  border-color: #c8d8ea;
+}
+body.light-mode .logo-preview-wrap img { mix-blend-mode: multiply; }
+
+/* Scrollbars */
+body.light-mode ::-webkit-scrollbar-thumb { background: #c8d8ea; }
+body.light-mode ::-webkit-scrollbar-thumb:hover { background: #a0b8cc; }
+
+/* Toast */
+body.light-mode #toast {
+  background: #ffffff;
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+}
+
+/* Theme toggle */
+body.light-mode #theme-toggle {
+  background: #f0f4f8;
+  border-color: #c8d8ea;
+  color: #3a5a7a;
+}
+body.light-mode #theme-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+/* Theme toggle button */
+#theme-toggle {
+  background: none;
+  border: 1px solid var(--navy-bdr);
+  border-radius: var(--radius);
+  color: var(--ghost);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px 8px;
+  line-height: 1;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+#theme-toggle:hover { border-color: var(--accent); color: var(--accent-lt); }
+body.light-mode #theme-toggle { background: #f0f4f8; border-color: #c0cfe0; color: #3d5166; }
 </style>
 </head>
 <body>
@@ -1187,6 +1456,7 @@ option { background: var(--navy-mid); }
       <span id="sel-count">0</span> items selected across <span id="cat-count">0</span> categories
     </div>
     <div class="spacer"></div>
+    <button id="theme-toggle" onclick="toggleTheme()" title="Toggle light / dark mode">☀️</button>
     <button class="btn btn-ghost" onclick="clearAll()">✕ Clear All</button>
     <button class="btn btn-outline" onclick="showTab('preview')">⊞ Preview</button>
     <button class="btn btn-accent" onclick="printSheet()">⎙ Print / Export</button>
@@ -1210,7 +1480,7 @@ option { background: var(--navy-mid); }
         <div class="ind-btn-row" id="ind-btn-row"></div>
       </div>
       <div id="catalog-search">
-        <input type="text" id="search-input" placeholder="Search offerings..." oninput="filterCatalog(this.value)">
+        <input type="text" id="search-input" placeholder="Search catalog..." oninput="filterCatalog(this.value)">
       </div>
       <div id="catalog-tree"></div>
     </div>
@@ -2234,7 +2504,6 @@ function buildCatalogTree() {
           <div class="item-label">
             <div class="item-name">${item.name}</div>
             <div class="item-desc">${item.desc}</div>
-            <div class="item-markets">${marketTags}</div>
           </div>
         `;
 
@@ -2634,18 +2903,17 @@ function renderPreview() {
   const hasCustomer  = company || contact || market;
   const contactLines = coContact.split("·").map(s => s.trim()).filter(Boolean);
   const contactHtml  = contactLines.join("<br>");
-  const defaultIntro = `Thank you for the opportunity to present our capabilities. The following is a tailored selection of ${coName} products and services${market ? ` for the <strong>${market}</strong> market` : ""}. We look forward to supporting your project and supply requirements.`;
-  const introText    = notes || defaultIntro;
 
   const customerBarHtml = hasCustomer ? `
     <div class="sheet-customer">
-      ${company ? `<div class="cust-field"><div class="cust-label">Prepared For</div><div class="cust-value">${company}</div>${contact ? `<div class="cust-value-sm">${contact}${jobTitle ? ", "+jobTitle : ""}</div>` : ""}</div>` : ""}
-      ${market  ? `<div class="cust-field"><div class="cust-label">Market</div><div class="cust-value">${market}</div></div>` : ""}
-      <div class="cust-field"><div class="cust-label">Items</div><div class="cust-value">${state.selected.size}</div><div class="cust-value-sm">${orderedCatIds.length} categories</div></div>
-      <div class="cust-field"><div class="cust-label">Date</div><div class="cust-value" style="font-size:11px">${today}</div>${rep ? `<div class="cust-value-sm">By ${rep}</div>` : ""}</div>
+      ${company ? `<div class="cust-field"><span class="cust-value">${company}${contact ? `<span class="cust-value-sm">&nbsp;${contact}${jobTitle ? ", "+jobTitle : ""}</span>` : ""}</span></div>` : ""}
+      ${market  ? `<div class="cust-field"><span class="cust-value">${market}</span></div>` : ""}
+      <div class="cust-field"><span class="cust-value">${state.selected.size}<span class="cust-value-sm">&nbsp;${orderedCatIds.length} items</span></span></div>
+      <div class="cust-field"><span class="cust-value">${today}${rep ? `<span class="cust-value-sm">&nbsp;${rep}</span>` : ""}</span></div>
     </div>` : "";
 
-  const showWhy = state.selected.has("why-delta-block");
+  const defaultIntro = `Thank you for the opportunity to present our capabilities. The following is a tailored selection of ${coName} products and services${market ? ` for the <strong>${market}</strong> market` : ""}. We look forward to supporting your project and supply requirements.`;
+  const introText    = notes || defaultIntro;
   const whyPoints = [
     "Single-Source Supplier for Engineered Process Products &amp; Systems",
     "Rapid Response for Shutdowns &amp; Critical Path Projects",
@@ -2654,6 +2922,7 @@ function renderPreview() {
     "Full Documentation, MTRs &amp; Compliance Support",
     "Rapid Response &amp; Expedited Fulfillment",
   ];
+  const showWhy = state.selected.has("why-delta-block");
   const whySectionHtml = showWhy ? `
     <div class="sheet-why">
       <div class="sheet-why-header"><span>Why Delta Solutions</span></div>
@@ -2800,6 +3069,26 @@ function renderPreview() {
     }
   }
 
+  // ── FINAL OVERFLOW GUARD ──
+  // After the balance pass, verify the last page's rows + whyH fit within pLastAvail.
+  // If not, push the last row(s) to a new overflow page until it fits.
+  // This prevents the Why Delta section from being clipped under any combination.
+  function lastPageUsed(pg) {
+    return pg.rows.reduce((s, r, ri) => s + r.height + (ri > 0 ? ROW_GAP : 0), 0);
+  }
+
+  let safetyPasses = 0;
+  while (safetyPasses < 20) {
+    safetyPasses++;
+    const lastPg = pages[pages.length - 1];
+    const used = lastPageUsed(lastPg);
+    const budget = lastPg.isFirst ? p1Avail : pLastAvail;
+    if (used <= budget || lastPg.rows.length <= 1) break;
+    // Last page overflows — move its last row to a new page
+    const spillRow = lastPg.rows.pop();
+    pages.push({ rows: [spillRow], isFirst: false });
+  }
+
   const totalPages = pages.length;
 
   const mkFooter = (n) => `
@@ -2940,6 +3229,26 @@ function removeLogo() {
   input.value = "";
   schedulePreviewUpdate();
 }
+
+/* ============================================================
+   THEME TOGGLE
+   ============================================================ */
+function toggleTheme() {
+  const isLight = document.body.classList.toggle("light-mode");
+  document.getElementById("theme-toggle").textContent = isLight ? "🌙" : "☀️";
+  try { localStorage.setItem("ds-theme", isLight ? "light" : "dark"); } catch(e) {}
+}
+
+// Restore saved theme on load
+try {
+  if (localStorage.getItem("ds-theme") === "light") {
+    document.body.classList.add("light-mode");
+    document.addEventListener("DOMContentLoaded", () => {
+      const btn = document.getElementById("theme-toggle");
+      if (btn) btn.textContent = "☀️";
+    });
+  }
+} catch(e) {}
 
 /* ============================================================
    INIT
