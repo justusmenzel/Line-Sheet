@@ -1126,7 +1126,127 @@ option { background: var(--navy-mid); }
 }
 
 /* ============================================================
-   SCROLLBARS
+   ADD CATALOG MODAL
+   ============================================================ */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  backdrop-filter: blur(2px);
+}
+.modal-overlay.open { display: flex; }
+
+.modal-box {
+  background: var(--navy-mid);
+  border: 1px solid var(--navy-bdr);
+  border-radius: 6px;
+  width: 420px;
+  max-width: calc(100vw - 32px);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  overflow: hidden;
+}
+
+.modal-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: var(--navy-ui);
+  border-bottom: 1px solid var(--navy-bdr);
+}
+.modal-hdr span {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-hi);
+}
+.modal-close {
+  background: none; border: none; color: var(--muted);
+  cursor: pointer; font-size: 15px; line-height: 1;
+  transition: color 0.1s;
+}
+.modal-close:hover { color: var(--red); }
+
+.modal-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--navy-bdr);
+}
+.modal-tab {
+  flex: 1;
+  padding: 10px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.modal-tab:hover { color: var(--text-hi); }
+.modal-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+.modal-form { padding: 16px 18px 18px; }
+
+.mfield { margin-bottom: 12px; }
+.mfield label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ghost);
+  margin-bottom: 5px;
+}
+.mfield input[type="text"],
+.mfield select {
+  width: 100%;
+  background: var(--navy);
+  border: 1px solid var(--navy-bdr);
+  border-radius: var(--radius);
+  padding: 7px 10px;
+  color: var(--text-hi);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.mfield input[type="text"]:focus,
+.mfield select:focus { border-color: var(--accent); }
+.mfield input::placeholder { color: var(--steel); }
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--navy-bdr);
+}
+
+/* Light mode modal */
+#excel-drop-zone:hover { border-color: var(--accent) !important; }
+body.light-mode .modal-box { background: #ffffff; border-color: #d0dcea; }
+body.light-mode .modal-hdr { background: #f4f7fc; border-bottom-color: #d0dcea; }
+body.light-mode .modal-hdr span { color: #0d1f35; }
+body.light-mode .modal-tab { color: #7a9abf; }
+body.light-mode .modal-tab:hover { color: #0d1f35; }
+body.light-mode #excel-drop-zone { border-color: #c8d8ea; }
+body.light-mode #excel-preview-body { background: #f8fafc; border-color: #d0dcea; color: #0d1f35; }
+body.light-mode .mfield label { color: #5a7a9a; }
+body.light-mode .mfield input[type="text"],
+body.light-mode .mfield select { background: #f8fafc; border-color: #c8d8ea; color: #0d1f35; }
+body.light-mode .modal-actions { border-top-color: #e0e8f4; }
+
    ============================================================ */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -1472,6 +1592,7 @@ body.light-mode #theme-toggle { background: #f0f4f8; border-color: #c0cfe0; colo
         <div class="actions">
           <button class="btn btn-ghost" style="padding:3px 8px; font-size:10px" onclick="expandAll()">All +</button>
           <button class="btn btn-ghost" style="padding:3px 8px; font-size:10px" onclick="collapseAll()">All −</button>
+          <button class="btn btn-accent" style="padding:3px 10px; font-size:10px" onclick="openAddModal()">＋ New</button>
         </div>
       </div>
       <!-- INDUSTRY QUICK-SELECT -->
@@ -1631,6 +1752,111 @@ body.light-mode #theme-toggle { background: #f0f4f8; border-color: #c0cfe0; colo
 </div>
 
 <div id="toast"></div>
+
+<!-- ADD SECTION / ITEM MODAL -->
+<div id="add-modal" class="modal-overlay" onclick="closeAddModal(event)">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <span id="modal-title">Add to Catalog</span>
+      <button class="modal-close" onclick="closeAddModal()">✕</button>
+    </div>
+
+    <!-- TAB ROW -->
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="mtab-section" onclick="switchModalTab('section')">New Section</button>
+      <button class="modal-tab" id="mtab-item" onclick="switchModalTab('item')">New Item</button>
+      <button class="modal-tab" id="mtab-excel" onclick="switchModalTab('excel')">Excel Import</button>
+    </div>
+
+    <!-- NEW SECTION FORM -->
+    <div id="mform-section" class="modal-form">
+      <div class="mfield">
+        <label>Section Name</label>
+        <input type="text" id="new-cat-name" placeholder="e.g. Heat Exchangers">
+      </div>
+      <div class="mfield">
+        <label>Icon (single character)</label>
+        <input type="text" id="new-cat-icon" placeholder="⚙" maxlength="2" style="width:60px">
+      </div>
+      <div class="mfield">
+        <label>Type</label>
+        <select id="new-cat-type">
+          <option value="product">Product</option>
+          <option value="service">Service</option>
+        </select>
+      </div>
+      <div class="mfield">
+        <label>First Subcategory Name</label>
+        <input type="text" id="new-cat-subname" placeholder="e.g. Shell & Tube">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeAddModal()">Cancel</button>
+        <button class="btn btn-accent" onclick="addSection()">Add Section</button>
+      </div>
+    </div>
+
+    <!-- NEW ITEM FORM -->
+    <div id="mform-item" class="modal-form" style="display:none">
+      <div class="mfield">
+        <label>Add to Section</label>
+        <select id="new-item-cat"></select>
+      </div>
+      <div class="mfield">
+        <label>Subcategory</label>
+        <select id="new-item-sub"></select>
+      </div>
+      <div class="mfield">
+        <label>Item Name</label>
+        <input type="text" id="new-item-name" placeholder="e.g. Shell & Tube Heat Exchanger">
+      </div>
+      <div class="mfield">
+        <label>Description</label>
+        <input type="text" id="new-item-desc" placeholder="Short description...">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeAddModal()">Cancel</button>
+        <button class="btn btn-accent" onclick="addItem()">Add Item</button>
+      </div>
+    </div>
+
+    <!-- EXCEL IMPORT FORM -->
+    <div id="mform-excel" class="modal-form" style="display:none">
+      <div style="background:var(--navy-ui);border:1px solid var(--navy-bdr);border-radius:4px;padding:12px 14px;margin-bottom:14px;">
+        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ghost);margin-bottom:8px;">Required Column Headers</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;">
+          <div style="font-size:11px;color:var(--text-hi);"><span style="color:var(--accent);font-family:var(--font-mono)">A</span> Section</div>
+          <div style="font-size:11px;color:var(--text-hi);"><span style="color:var(--accent);font-family:var(--font-mono)">B</span> Subcategory</div>
+          <div style="font-size:11px;color:var(--text-hi);"><span style="color:var(--accent);font-family:var(--font-mono)">C</span> Item Name</div>
+          <div style="font-size:11px;color:var(--text-hi);"><span style="color:var(--accent);font-family:var(--font-mono)">D</span> Description</div>
+          <div style="font-size:11px;color:var(--text-hi);"><span style="color:var(--accent);font-family:var(--font-mono)">E</span> Type (product/service)</div>
+          <div style="font-size:11px;color:var(--text-hi);"><span style="color:var(--accent);font-family:var(--font-mono)">F</span> Icon (optional)</div>
+        </div>
+        <div style="font-size:10px;color:var(--muted);margin-top:8px;line-height:1.5;">Row 1 = headers. Each row = one item. New sections and subcategories are created automatically.</div>
+      </div>
+      <div class="mfield">
+        <label>Download Template</label>
+        <button class="btn btn-ghost" style="width:100%;justify-content:center" onclick="downloadExcelTemplate()">⬇ Download Excel Template (.xlsx)</button>
+      </div>
+      <div class="mfield">
+        <label>Upload File (.xlsx or .csv)</label>
+        <div style="position:relative;border:2px dashed var(--navy-bdr);border-radius:4px;padding:20px;text-align:center;cursor:pointer;transition:border-color 0.15s" id="excel-drop-zone">
+          <input type="file" id="excel-file-input" accept=".xlsx,.xls,.csv" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%">
+          <div style="font-size:20px;opacity:0.4;margin-bottom:6px">📄</div>
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--ghost)">Click or drop .xlsx / .csv file here</div>
+        </div>
+      </div>
+      <div id="excel-preview" style="display:none;margin-bottom:12px">
+        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ghost);margin-bottom:6px">Preview</div>
+        <div id="excel-preview-body" style="background:var(--navy);border:1px solid var(--navy-bdr);border-radius:4px;padding:8px 12px;max-height:160px;overflow-y:auto;font-size:11px;color:var(--text-md);line-height:1.8"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeAddModal()">Cancel</button>
+        <button class="btn btn-accent" id="excel-import-btn" disabled onclick="importFromExcel()">Import</button>
+      </div>
+    </div>
+
+  </div><!-- /.modal-box -->
+</div><!-- /#add-modal -->
 
 <script>
 /* ============================================================
@@ -3249,6 +3475,277 @@ try {
     });
   }
 } catch(e) {}
+
+/* ============================================================
+   ADD CATALOG MODAL
+   ============================================================ */
+function openAddModal() {
+  // Populate section dropdown for "Add Item"
+  const catSel = document.getElementById("new-item-cat");
+  catSel.innerHTML = "";
+  CATALOG.filter(c => c.id !== "why-delta").forEach(cat => {
+    const o = document.createElement("option");
+    o.value = cat.id;
+    o.textContent = cat.name;
+    catSel.appendChild(o);
+  });
+  populateSubcatDropdown();
+  catSel.onchange = populateSubcatDropdown;
+
+  // Reset forms
+  ["new-cat-name","new-cat-icon","new-cat-subname","new-item-name","new-item-desc"]
+    .forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
+  document.getElementById("new-cat-icon").value = "⚙";
+
+  switchModalTab("section");
+  document.getElementById("add-modal").classList.add("open");
+}
+
+function populateSubcatDropdown() {
+  const catId = document.getElementById("new-item-cat").value;
+  const cat   = CATALOG.find(c => c.id === catId);
+  const subSel = document.getElementById("new-item-sub");
+  subSel.innerHTML = "";
+  if (!cat) return;
+  cat.subcategories.forEach(sub => {
+    const o = document.createElement("option");
+    o.value = sub.id;
+    o.textContent = sub.name;
+    subSel.appendChild(o);
+  });
+}
+
+function closeAddModal(e) {
+  if (e && e.target !== document.getElementById("add-modal")) return;
+  document.getElementById("add-modal").classList.remove("open");
+}
+
+function switchModalTab(tab) {
+  ['section','item','excel'].forEach(t => {
+    document.getElementById(`mtab-${t}`).classList.toggle("active", t === tab);
+    document.getElementById(`mform-${t}`).style.display = t === tab ? "block" : "none";
+  });
+  if (tab === "excel") {
+    // Reset file state
+    window._excelRows = null;
+    document.getElementById("excel-import-btn").disabled = true;
+    document.getElementById("excel-preview").style.display = "none";
+    document.getElementById("excel-file-input").value = "";
+    document.getElementById("excel-file-input").onchange = handleExcelFile;
+  }
+}
+
+/* ── EXCEL TEMPLATE DOWNLOAD ── */
+function downloadExcelTemplate() {
+  // Build a simple CSV template — works without SheetJS
+  const headers = ["Section","Subcategory","Item Name","Description","Type (product/service)","Icon (optional)"];
+  const examples = [
+    ["PVF & Flow Control","Pipe & Fittings","Carbon Steel Pipe","Seamless & welded; ASTM A106","product","⬡"],
+    ["PVF & Flow Control","Pipe & Fittings","Stainless Steel Pipe","304/316 grades; various schedules","product","⬡"],
+    ["Custom Services","Inspection","Drone Inspection","Aerial thermal and visual inspection","service","◈"],
+  ];
+
+  // Try SheetJS first for proper .xlsx
+  if (window.XLSX) {
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet([headers, ...examples]);
+    // Column widths
+    ws['!cols'] = [25,22,30,45,20,8].map(w => ({ wch: w }));
+    XLSX.utils.book_append_sheet(wb, ws, "Catalog Import");
+    XLSX.writeFile(wb, "delta-catalog-template.xlsx");
+    showToast("Template downloaded — delta-catalog-template.xlsx");
+  } else {
+    // Fallback: CSV download
+    const csv = [headers, ...examples].map(r => r.map(v => `"${v}"`).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+    a.download = "delta-catalog-template.csv"; a.click();
+    showToast("Template downloaded as CSV (install SheetJS for .xlsx)");
+  }
+}
+
+/* ── LOAD SHEETJS ON DEMAND ── */
+function loadSheetJS(cb) {
+  if (window.XLSX) { cb(); return; }
+  const s = document.createElement("script");
+  s.src = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+  s.onload = cb;
+  s.onerror = () => showToast("Could not load Excel library. Upload a .csv file instead.");
+  document.head.appendChild(s);
+}
+
+/* ── HANDLE FILE SELECTION ── */
+function handleExcelFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const ext = file.name.split(".").pop().toLowerCase();
+
+  const process = () => {
+    const reader = new FileReader();
+    if (ext === "csv") {
+      reader.onload = ev => parseCSVImport(ev.target.result);
+      reader.readAsText(file);
+    } else {
+      reader.onload = ev => parseXLSXImport(ev.target.result);
+      reader.readAsArrayBuffer(file);
+    }
+  };
+
+  if (ext === "csv") process();
+  else loadSheetJS(process);
+}
+
+function parseXLSXImport(buffer) {
+  try {
+    const wb = XLSX.read(buffer, { type: "array" });
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
+    processImportRows(rows);
+  } catch(err) {
+    showToast("Error reading file: " + err.message);
+  }
+}
+
+function parseCSVImport(text) {
+  const rows = text.split("\n").map(line =>
+    line.split(",").map(v => v.trim().replace(/^"|"$/g, ""))
+  ).filter(r => r.some(c => c));
+  processImportRows(rows);
+}
+
+function processImportRows(rows) {
+  if (rows.length < 2) { showToast("File appears empty"); return; }
+
+  // Skip header row
+  const data = rows.slice(1).filter(r => r[2] && r[2].trim()); // must have Item Name
+  if (!data.length) { showToast("No valid rows found. Check column format."); return; }
+
+  window._excelRows = data;
+
+  // Show preview
+  const preview = document.getElementById("excel-preview-body");
+  preview.innerHTML = data.slice(0, 8).map(r =>
+    `<div style="padding:2px 0;border-bottom:1px solid var(--navy-bdr)">
+      <span style="color:var(--accent)">${r[0]||"?"}</span>
+      <span style="color:var(--muted)"> / ${r[1]||"General"}</span>
+      → <strong>${r[2]}</strong>
+      ${r[3] ? `<span style="color:var(--ghost)"> — ${r[3].slice(0,50)}</span>` : ""}
+    </div>`
+  ).join("") + (data.length > 8 ? `<div style="color:var(--muted);padding-top:4px">+${data.length-8} more rows</div>` : "");
+
+  document.getElementById("excel-preview").style.display = "block";
+  document.getElementById("excel-import-btn").disabled = false;
+  showToast(`${data.length} items ready to import`);
+}
+
+/* ── IMPORT INTO CATALOG ── */
+function importFromExcel() {
+  const rows = window._excelRows;
+  if (!rows?.length) return;
+
+  let added = 0, skipped = 0;
+
+  rows.forEach(r => {
+    const catName  = (r[0]||"").trim() || "Imported";
+    const subName  = (r[1]||"").trim() || "General";
+    const itemName = (r[2]||"").trim();
+    const desc     = (r[3]||"").trim() || itemName;
+    const type     = ((r[4]||"product").trim().toLowerCase() === "service") ? "service" : "product";
+    const icon     = (r[5]||"⚙").trim() || "⚙";
+
+    if (!itemName) { skipped++; return; }
+
+    // Find or create category
+    let cat = CATALOG.find(c => c.name.toLowerCase() === catName.toLowerCase() && c.id !== "why-delta");
+    if (!cat) {
+      const catId = "import-" + catName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g,"");
+      cat = { id: catId, name: catName, icon, type, subcategories: [] };
+      CATALOG.push(cat);
+      if (state.catOrder) state.catOrder.push(catId);
+    }
+
+    // Find or create subcategory
+    let sub = cat.subcategories.find(s => s.name.toLowerCase() === subName.toLowerCase());
+    if (!sub) {
+      const subId = cat.id + "-" + subName.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");
+      sub = { id: subId, name: subName, items: [] };
+      cat.subcategories.push(sub);
+    }
+
+    // Check for duplicate item name in sub
+    if (sub.items.some(i => i.name.toLowerCase() === itemName.toLowerCase())) {
+      skipped++; return;
+    }
+
+    const itemId = sub.id + "-" + itemName.toLowerCase().replace(/[^a-z0-9]+/g,"-").slice(0,24) + "-" + Date.now().toString(36) + added;
+    sub.items.push({ id: itemId, name: itemName, desc, markets: [] });
+    added++;
+  });
+
+  buildCatalogTree();
+  updateGroupCheckboxes();
+  closeAddModal();
+  showToast(`✓ Imported ${added} items${skipped ? ` (${skipped} skipped — duplicates or blank)` : ""}`);
+  window._excelRows = null;
+}
+
+function addSection() {
+  const name    = document.getElementById("new-cat-name").value.trim();
+  const icon    = document.getElementById("new-cat-icon").value.trim() || "⚙";
+  const type    = document.getElementById("new-cat-type").value;
+  const subname = document.getElementById("new-cat-subname").value.trim() || "General";
+
+  if (!name) { showToast("Section name is required"); return; }
+
+  const id = "custom-" + name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  if (CATALOG.find(c => c.id === id)) { showToast("A section with that name already exists"); return; }
+
+  const subId = id + "-general";
+  CATALOG.push({ id, name, icon, type, subcategories: [{ id: subId, name: subname, items: [] }] });
+  if (state.catOrder) state.catOrder.push(id);
+
+  buildCatalogTree();
+  updateGroupCheckboxes();
+  closeAddModal();
+  showToast(`Section "${name}" added`);
+  setTimeout(() => {
+    const el = document.querySelector(`.cat-group[data-cat-id="${id}"]`);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, 200);
+}
+
+function addItem() {
+  const catId   = document.getElementById("new-item-cat").value;
+  const subId   = document.getElementById("new-item-sub").value;
+  const name    = document.getElementById("new-item-name").value.trim();
+  const desc    = document.getElementById("new-item-desc").value.trim();
+
+  if (!name) { showToast("Item name is required"); return; }
+
+  const cat = CATALOG.find(c => c.id === catId);
+  const sub = cat?.subcategories.find(s => s.id === subId);
+  if (!sub) { showToast("Invalid section or subcategory"); return; }
+
+  // Generate unique ID
+  const itemId = catId + "-" + name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 30) + "-" + Date.now().toString(36);
+
+  sub.items.push({ id: itemId, name, desc: desc || name, markets: [] });
+
+  buildCatalogTree();
+  updateGroupCheckboxes();
+  closeAddModal();
+  showToast(`"${name}" added to ${cat.name}`);
+
+  // Auto-select new item
+  setTimeout(() => {
+    state.selected.add(itemId);
+    updateItemRow(itemId, true);
+    updateGroupCheckboxes();
+    updateSummary();
+    renderSelected();
+    schedulePreviewUpdate();
+  }, 300);
+}
 
 /* ============================================================
    INIT
