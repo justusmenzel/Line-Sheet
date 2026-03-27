@@ -2718,6 +2718,7 @@ function buildCatalogTree() {
       order.splice(fromIdx, 1);
       order.splice(toIdx, 0, draggedId);
       state.catOrder = [...order];
+      saveOrder();
       buildCatalogTree();
       updateGroupCheckboxes();
       schedulePreviewUpdate();
@@ -3716,9 +3717,12 @@ function importFromExcel() {
 
     const itemId = sub.id + "-" + itemName.toLowerCase().replace(/[^a-z0-9]+/g,"-").slice(0,24) + "-" + Date.now().toString(36) + added;
     sub.items.push({ id: itemId, name: itemName, desc, markets: [] });
+    cat._modified = true;
     added++;
   });
 
+  saveOrder();
+  saveCustomCatalog();
   buildCatalogTree();
   updateGroupCheckboxes();
   closeAddModal();
@@ -3740,6 +3744,8 @@ function addSection() {
   const subId = id + "-general";
   CATALOG.push({ id, name, icon, type, subcategories: [{ id: subId, name: subname, items: [] }] });
   if (state.catOrder) state.catOrder.push(id);
+  saveOrder();
+  saveCustomCatalog();
 
   buildCatalogTree();
   updateGroupCheckboxes();
@@ -3767,6 +3773,8 @@ function addItem() {
   const itemId = catId + "-" + name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 30) + "-" + Date.now().toString(36);
 
   sub.items.push({ id: itemId, name, desc: desc || name, markets: [] });
+  cat._modified = true;
+  saveCustomCatalog();
 
   buildCatalogTree();
   updateGroupCheckboxes();
@@ -3785,10 +3793,71 @@ function addItem() {
 }
 
 /* ============================================================
+   CATALOG PERSISTENCE
+   Saves section order + custom catalog additions to localStorage
+   so drag-reorder and new items survive page refresh.
+   ============================================================ */
+const STORAGE_ORDER   = "ds-cat-order";
+const STORAGE_CUSTOM  = "ds-cat-custom";  // custom sections added at runtime
+
+function saveOrder() {
+  try { localStorage.setItem(STORAGE_ORDER, JSON.stringify(state.catOrder)); } catch(e) {}
+}
+
+function saveCustomCatalog() {
+  // Save only sections that don't exist in the original compiled CATALOG
+  const originalIds = new Set(CATALOG.map(c => c.id));
+  const custom = CATALOG.filter(c => !originalIds.has(c.id) || c._modified);
+  // Also save modified built-in sections (items added to them)
+  const modified = [];
+  CATALOG.forEach(cat => {
+    if (cat._modified) modified.push({ id: cat.id, subcategories: cat.subcategories });
+  });
+  try {
+    localStorage.setItem(STORAGE_CUSTOM, JSON.stringify({ newCats: custom, modified }));
+  } catch(e) {}
+}
+
+function loadPersistedData() {
+  // Restore section order
+  try {
+    const saved = localStorage.getItem(STORAGE_ORDER);
+    if (saved) {
+      const order = JSON.parse(saved);
+      // Add any new catalog IDs that weren't in the saved order yet
+      const missing = CATALOG.map(c => c.id).filter(id => !order.includes(id));
+      state.catOrder = [...order, ...missing];
+    } else {
+      state.catOrder = CATALOG.map(c => c.id);
+    }
+  } catch(e) { state.catOrder = CATALOG.map(c => c.id); }
+
+  // Restore custom sections & modified built-ins
+  try {
+    const saved = localStorage.getItem(STORAGE_CUSTOM);
+    if (saved) {
+      const { newCats, modified } = JSON.parse(saved);
+      // Add new sections that don't exist yet
+      (newCats || []).forEach(cat => {
+        if (!CATALOG.find(c => c.id === cat.id)) {
+          CATALOG.push(cat);
+          if (!state.catOrder.includes(cat.id)) state.catOrder.push(cat.id);
+        }
+      });
+      // Restore modified built-in subcategories
+      (modified || []).forEach(({ id, subcategories }) => {
+        const cat = CATALOG.find(c => c.id === id);
+        if (cat) { cat.subcategories = subcategories; cat._modified = true; }
+      });
+    }
+  } catch(e) {}
+}
+
+/* ============================================================
    INIT
    ============================================================ */
 function init() {
-  if (!state.catOrder) state.catOrder = CATALOG.map(c => c.id);
+  loadPersistedData(); // restores order + custom items from localStorage
   buildCatalogTree();
   buildIndustryBar();
   buildPresets();
