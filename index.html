@@ -2337,6 +2337,43 @@ const CATALOG = [
       },
     ]
   },
+  // ─── VALVE AUTOMATION & MOV SERVICES ──────────────────────────
+  {
+    id: "valve-automation",
+    name: "Valve Automation & MOV Services",
+    icon: "⚙",
+    type: "service",
+    subcategories: [
+      {
+        id: "va-actuators",
+        name: "Actuators & Supply",
+        items: [
+          { id: "va-mov-electric", name: "Electric Actuators (MOVs)", desc: "Rotork specialists; multi-turn, quarter-turn, modulating, on/off service; all voltages and enclosures", markets: ["og-upstream","og-midstream","og-downstream","petrochem","power-gen","industrial","offshore"] },
+          { id: "va-actuator-supply", name: "Actuator Supply", desc: "New actuators, retrofit packages, multi-brand support; Rotork, Auma, EIM, Limitorque, Biffi", markets: ["og-upstream","og-midstream","og-downstream","petrochem","power-gen","industrial","offshore"] },
+          { id: "va-actuator-repair", name: "Actuator Repair", desc: "In-house repair, diagnostics, rebuilds, parts replacement; fast turnaround; warranty-backed", markets: ["og-upstream","og-midstream","og-downstream","petrochem","power-gen","industrial","offshore"] },
+        ]
+      },
+      {
+        id: "va-field",
+        name: "Field & Technical Services",
+        items: [
+          { id: "va-field-service", name: "Field Service", desc: "On-site service, troubleshooting, maintenance, emergency support; 24/7 response capability", markets: ["og-upstream","og-midstream","og-downstream","petrochem","power-gen","industrial","offshore"] },
+          { id: "va-installation", name: "Installation", desc: "Actuator mounting, valve automation, wiring, integration; all valve types and actuator classes", markets: ["og-upstream","og-midstream","og-downstream","petrochem","power-gen","industrial","offshore"] },
+          { id: "va-commissioning", name: "Commissioning", desc: "Startup support, functional testing, system verification; DCS/SIS integration support", markets: ["og-upstream","og-midstream","og-downstream","petrochem","power-gen","industrial","offshore"] },
+          { id: "va-calibration", name: "Calibration & Setup", desc: "Torque settings, limit switches, position feedback; compliance documentation and test records", markets: ["og-upstream","og-midstream","og-downstream","petrochem","power-gen","industrial","offshore"] },
+          { id: "va-troubleshooting", name: "Troubleshooting", desc: "Fault diagnostics, control issues, actuator performance; remote and on-site support available", markets: ["og-upstream","og-midstream","og-downstream","petrochem","power-gen","industrial","offshore"] },
+        ]
+      },
+      {
+        id: "va-lifecycle",
+        name: "Retrofits & Lifecycle",
+        items: [
+          { id: "va-retrofits", name: "Retrofits & Upgrades", desc: "Actuator replacements, modernization, control upgrades; extend service life, improve reliability", markets: ["og-upstream","og-midstream","og-downstream","petrochem","power-gen","industrial","offshore"] },
+          { id: "va-lifecycle-support", name: "Lifecycle Support", desc: "Removal, repair, replacement, installation, ongoing maintenance; single-source program management", markets: ["og-upstream","og-midstream","og-downstream","petrochem","power-gen","industrial","offshore"] },
+        ]
+      },
+    ]
+  },
 ];
 
 /* ============================================================
@@ -2355,7 +2392,7 @@ const INDUSTRY_GROUPS = [
     label: "Oil & Gas",
     catIds: ["pvf","level","bolting","sample","fabrication","sourcing",
              "pumps","tankfarm","vessels","facility","wellsite",
-             "instrumentation","artificial-lift"]
+             "instrumentation","artificial-lift","valve-automation"]
   },
   {
     key: "datacenter",
@@ -2367,13 +2404,13 @@ const INDUSTRY_GROUPS = [
     key: "petrochem",
     label: "Petrochem & Refining",
     catIds: ["pvf","level","bolting","sample","fabrication","sourcing",
-             "vessels","instrumentation","logistics"]
+             "vessels","instrumentation","logistics","valve-automation"]
   },
   {
     key: "powergen",
     label: "Power Generation",
     catIds: ["pvf","level","bolting","sample","fabrication","sourcing",
-             "instrumentation","logistics"]
+             "instrumentation","logistics","valve-automation"]
   },
 ];
 
