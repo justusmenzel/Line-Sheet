@@ -1560,6 +1560,72 @@ body.light-mode #theme-toggle:hover {
 }
 #theme-toggle:hover { border-color: var(--accent); color: var(--accent-lt); }
 body.light-mode #theme-toggle { background: #f0f4f8; border-color: #c0cfe0; color: #3d5166; }
+
+/* ══════════════════════════════════════════════════════════════
+   AI CATALOG ASSISTANT BOT
+══════════════════════════════════════════════════════════════ */
+#ai-bot-btn {
+  display: flex; align-items: center; gap: 5px;
+  background: linear-gradient(135deg, #1565C0 0%, #0d4fa0 100%);
+  border: none; border-radius: var(--radius); color: #fff; cursor: pointer;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.06em; padding: 5px 12px; transition: all 0.15s;
+  flex-shrink: 0; box-shadow: 0 2px 8px rgba(21,101,192,0.35);
+}
+#ai-bot-btn:hover { background: linear-gradient(135deg, #1878d8 0%, #1565C0 100%); }
+#ai-bot-panel {
+  position: fixed; bottom: 24px; right: 24px; width: 380px;
+  background: var(--navy-mid); border: 1px solid var(--navy-bdr);
+  border-radius: 12px; display: flex; flex-direction: column;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5); z-index: 500;
+  transition: opacity 0.2s, transform 0.2s; overflow: hidden;
+}
+.ai-bot-hidden { opacity: 0 !important; pointer-events: none !important; transform: translateY(16px) !important; }
+#ai-bot-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #1565C0 0%, #0d4fa0 100%);
+  border-radius: 11px 11px 0 0; flex-shrink: 0;
+}
+#ai-bot-title { display: flex; align-items: center; gap: 8px; font-family: var(--font-sans); font-weight: 700; font-size: 13px; color: #fff; }
+#ai-bot-icon { font-size: 16px; animation: aiPulse 2s ease-in-out infinite; }
+@keyframes aiPulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+#ai-bot-close { background: rgba(255,255,255,0.15); border: none; border-radius: 4px; color: #fff; cursor: pointer; font-size: 13px; padding: 2px 8px; line-height: 1.4; transition: background 0.15s; }
+#ai-bot-close:hover { background: rgba(255,255,255,0.25); }
+#ai-bot-messages { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; min-height: 180px; max-height: 280px; }
+#ai-bot-messages::-webkit-scrollbar { width: 4px; }
+#ai-bot-messages::-webkit-scrollbar-thumb { background: var(--navy-bdr); border-radius: 2px; }
+.ai-msg { display: flex; flex-direction: column; gap: 3px; }
+.ai-msg.ai  { align-items: flex-start; }
+.ai-msg.usr { align-items: flex-end; }
+.ai-bubble { max-width: 88%; padding: 9px 13px; border-radius: 10px; font-size: 12px; line-height: 1.55; font-family: var(--font-sans); }
+.ai-msg.ai  .ai-bubble { background: var(--navy-ui); color: var(--text-hi); border-bottom-left-radius: 3px; }
+.ai-msg.usr .ai-bubble { background: #1565C0; color: #fff; border-bottom-right-radius: 3px; }
+.ai-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0 4px; }
+.ai-added-tag { display: inline-block; background: rgba(21,101,192,0.12); border: 1px solid rgba(21,101,192,0.25); border-radius: 3px; font-family: var(--font-mono); font-size: 9px; color: var(--accent-lt); padding: 2px 7px; margin: 3px 3px 0 0; cursor: pointer; transition: background 0.12s; }
+.ai-added-tag:hover { background: rgba(21,101,192,0.22); }
+.ai-typing { display: flex; align-items: center; gap: 5px; padding: 9px 13px; }
+.ai-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-lt); animation: aiDot 1.2s infinite; }
+.ai-dot:nth-child(2) { animation-delay: 0.2s; }
+.ai-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes aiDot { 0%,80%,100%{opacity:0.3;transform:scale(0.8)} 40%{opacity:1;transform:scale(1)} }
+#ai-bot-suggestions { padding: 6px 12px 4px; display: flex; flex-wrap: wrap; gap: 5px; border-top: 1px solid var(--navy-bdr); flex-shrink: 0; }
+.ai-suggestion { background: var(--navy); border: 1px solid var(--navy-bdr); border-radius: 20px; color: var(--ghost); cursor: pointer; font-family: var(--font-mono); font-size: 9.5px; padding: 4px 10px; transition: all 0.12s; white-space: nowrap; }
+.ai-suggestion:hover { border-color: var(--accent); color: var(--accent-lt); background: rgba(21,101,192,0.08); }
+#ai-bot-input-row { display: flex; gap: 8px; padding: 10px 12px; border-top: 1px solid var(--navy-bdr); background: var(--navy); flex-shrink: 0; }
+#ai-bot-input { flex: 1; background: var(--navy-mid); border: 1px solid var(--navy-bdr); border-radius: 6px; color: var(--text-hi); font-family: var(--font-sans); font-size: 12px; line-height: 1.45; outline: none; padding: 8px 10px; resize: none; transition: border-color 0.15s; }
+#ai-bot-input:focus { border-color: var(--accent); }
+#ai-bot-input::placeholder { color: var(--muted); }
+#ai-bot-send { align-self: flex-end; background: #1565C0; border: none; border-radius: 6px; color: #fff; cursor: pointer; font-family: var(--font-mono); font-size: 11px; font-weight: 600; padding: 8px 14px; transition: background 0.15s; flex-shrink: 0; }
+#ai-bot-send:hover { background: #1878d8; }
+#ai-bot-send:disabled { background: var(--steel); cursor: not-allowed; }
+body.light-mode #ai-bot-panel { background: #ffffff; border-color: #d0dcea; }
+body.light-mode .ai-msg.ai .ai-bubble { background: #f0f4f8; color: #0d1f35; }
+body.light-mode #ai-bot-suggestions { border-top-color: #e0e8f4; }
+body.light-mode .ai-suggestion { background: #f4f7fc; border-color: #c8d8ea; color: #3a5a7a; }
+body.light-mode #ai-bot-input-row { background: #f8fafc; border-top-color: #e0e8f4; }
+body.light-mode #ai-bot-input { background: #ffffff; border-color: #c8d8ea; color: #0d1f35; }
+body.light-mode .ai-added-tag { color: #1565C0; }
 </style>
 </head>
 <body>
@@ -1621,6 +1687,7 @@ body.light-mode #theme-toggle { background: #f0f4f8; border-color: #c0cfe0; colo
       <span id="sel-count">0</span> items selected across <span id="cat-count">0</span> categories
     </div>
     <div class="spacer"></div>
+    <button id="ai-bot-btn" onclick="toggleAIBot()" title="AI Catalog Assistant">✦ AI Assistant</button>
     <button id="theme-toggle" onclick="toggleTheme()" title="Toggle light / dark mode">☀️</button>
     <button class="btn btn-ghost" onclick="clearAll()">✕ Clear All</button>
     <button class="btn btn-outline" onclick="showTab('preview')">⊞ Preview</button>
@@ -1902,6 +1969,31 @@ body.light-mode #theme-toggle { background: #f0f4f8; border-color: #c0cfe0; colo
 
   </div><!-- /.modal-box -->
 </div><!-- /#add-modal -->
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     AI CATALOG ASSISTANT BOT PANEL
+══════════════════════════════════════════════════════════════ -->
+<div id="ai-bot-panel" class="ai-bot-hidden">
+  <div id="ai-bot-header">
+    <div id="ai-bot-title">
+      <span id="ai-bot-icon">✦</span>
+      <span>Catalog AI</span>
+    </div>
+    <button id="ai-bot-close" onclick="toggleAIBot()" title="Close">✕</button>
+  </div>
+  <div id="ai-bot-messages"></div>
+  <div id="ai-bot-suggestions">
+    <button class="ai-suggestion" onclick="aiSuggest(this)">Add PVF items for offshore</button>
+    <button class="ai-suggestion" onclick="aiSuggest(this)">Add instrumentation products</button>
+    <button class="ai-suggestion" onclick="aiSuggest(this)">Add electrical services section</button>
+    <button class="ai-suggestion" onclick="aiSuggest(this)">Add heat tracing products</button>
+  </div>
+  <div id="ai-bot-input-row">
+    <textarea id="ai-bot-input" placeholder="Describe what to add to the catalog… e.g. 'Add 5 valve automation services for petrochemical'" rows="2"></textarea>
+    <button id="ai-bot-send" onclick="aiBotSend()">Send</button>
+  </div>
+</div>
 
 </div><!-- /#app (linesheet generator) -->
 
@@ -3906,6 +3998,237 @@ function loadPersistedData() {
     }
   } catch(e) {}
 }
+
+
+/* ============================================================
+   AI CATALOG ASSISTANT
+   ============================================================ */
+let aiBotOpen = false;
+let aiBotBusy = false;
+
+function toggleAIBot() {
+  aiBotOpen = !aiBotOpen;
+  const panel = document.getElementById('ai-bot-panel');
+  const btn   = document.getElementById('ai-bot-btn');
+  if (aiBotOpen) {
+    panel.classList.remove('ai-bot-hidden');
+    btn.classList.add('active');
+    if (!document.getElementById('ai-bot-messages').children.length) {
+      aiBotAddMessage('ai', "Hi! I'm your Catalog AI. Describe what products or services you want to add and I'll structure them and add them to your Master Catalog automatically. Try: <em>&ldquo;Add 5 offshore safety products&rdquo;</em> or <em>&ldquo;Create a Heat Tracing section with 6 items&rdquo;</em>.");
+    }
+    setTimeout(() => document.getElementById('ai-bot-input').focus(), 200);
+  } else {
+    panel.classList.add('ai-bot-hidden');
+    btn.classList.remove('active');
+  }
+}
+
+function aiSuggest(btn) {
+  const input = document.getElementById('ai-bot-input');
+  input.value = btn.textContent;
+  input.focus();
+}
+
+function aiBotAddMessage(role, html) {
+  const msgs = document.getElementById('ai-bot-messages');
+  const wrapper = document.createElement('div');
+  wrapper.className = 'ai-msg ' + role;
+  const label = document.createElement('span');
+  label.className = 'ai-label';
+  label.textContent = role === 'ai' ? 'Catalog AI' : 'You';
+  const bubble = document.createElement('div');
+  bubble.className = 'ai-bubble';
+  bubble.innerHTML = html;
+  wrapper.appendChild(label);
+  wrapper.appendChild(bubble);
+  msgs.appendChild(wrapper);
+  msgs.scrollTop = msgs.scrollHeight;
+  return wrapper;
+}
+
+function aiBotAddTyping() {
+  const msgs = document.getElementById('ai-bot-messages');
+  const wrapper = document.createElement('div');
+  wrapper.className = 'ai-msg ai';
+  wrapper.id = 'ai-typing-indicator';
+  const bubble = document.createElement('div');
+  bubble.className = 'ai-bubble ai-typing';
+  bubble.innerHTML = '<div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div>';
+  wrapper.appendChild(bubble);
+  msgs.appendChild(wrapper);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function aiBotRemoveTyping() {
+  const el = document.getElementById('ai-typing-indicator');
+  if (el) el.remove();
+}
+
+async function aiBotSend() {
+  if (aiBotBusy) return;
+  const input = document.getElementById('ai-bot-input');
+  const text = input.value.trim();
+  if (!text) return;
+
+  input.value = '';
+  aiBotAddMessage('usr', text);
+  aiBotBusy = true;
+  document.getElementById('ai-bot-send').disabled = true;
+  aiBotAddTyping();
+
+  // Build system prompt with catalog context
+  const existingCats = CATALOG.filter(c => c.id !== 'why-delta').map(c => c.name).join(', ');
+  const systemPrompt = `You are an AI assistant that helps build industrial product catalogs for Delta Solutions, an oil & gas and industrial supplier.
+
+The user will describe products or services to add to their Master Catalog. You must respond ONLY with a valid JSON object — no markdown, no explanation text, no code blocks.
+
+Existing catalog sections: ${existingCats}
+
+Response format (strict JSON):
+{
+  "message": "Short friendly confirmation message describing what was added",
+  "items": [
+    {
+      "section": "Section Name (existing or new)",
+      "subcategory": "Subcategory Name",
+      "name": "Product/Service Name",
+      "description": "Concise technical description, 8-15 words",
+      "type": "product" or "service"
+    }
+  ]
+}
+
+Rules:
+- Generate 4-8 items unless user specifies a number
+- Use industry-appropriate technical language (oil & gas, petrochemical, power gen)
+- If adding to an existing section name it exactly as listed above
+- Keep descriptions professional and specific
+- type is "product" for physical goods, "service" for services/labor`;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1500,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: text }]
+      })
+    });
+
+    const data = await response.json();
+    aiBotRemoveTyping();
+
+    const rawText = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
+
+    let parsed;
+    try {
+      // Strip any accidental markdown fences
+      const clean = rawText.replace(/```json?/g,'').replace(/```/g,'').trim();
+      parsed = JSON.parse(clean);
+    } catch(e) {
+      aiBotAddMessage('ai', '⚠️ I had trouble formatting the response. Please try again with a clearer description.');
+      aiBotBusy = false;
+      document.getElementById('ai-bot-send').disabled = false;
+      return;
+    }
+
+    // Add items to CATALOG
+    const added = [];
+    (parsed.items || []).forEach(item => {
+      const catName = item.section?.trim() || 'AI Additions';
+      const subName = item.subcategory?.trim() || 'General';
+      const itemName = item.name?.trim();
+      const desc = item.description?.trim() || itemName;
+      const type = item.type === 'service' ? 'service' : 'product';
+
+      if (!itemName) return;
+
+      // Find or create category
+      let cat = CATALOG.find(c => c.name.toLowerCase() === catName.toLowerCase() && c.id !== 'why-delta');
+      if (!cat) {
+        const catId = 'ai-' + catName.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,30) + '-' + Date.now().toString(36);
+        cat = { id: catId, name: catName, icon: type === 'service' ? '◉' : '⬡', type, subcategories: [] };
+        CATALOG.push(cat);
+        if (state.catOrder) state.catOrder.push(catId);
+      }
+
+      // Find or create subcategory
+      let sub = cat.subcategories.find(s => s.name.toLowerCase() === subName.toLowerCase());
+      if (!sub) {
+        const subId = cat.id + '-' + subName.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,24);
+        sub = { id: subId, name: subName, items: [] };
+        cat.subcategories.push(sub);
+      }
+
+      // Skip duplicates
+      if (sub.items.some(i => i.name.toLowerCase() === itemName.toLowerCase())) return;
+
+      const itemId = sub.id + '-' + itemName.toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,20) + '-' + Date.now().toString(36) + Math.random().toString(36).slice(2,5);
+      sub.items.push({ id: itemId, name: itemName, desc, markets: [] });
+      cat._modified = true;
+      added.push({ id: itemId, name: itemName, section: catName });
+    });
+
+    saveOrder();
+    saveCustomCatalog();
+    buildCatalogTree();
+    updateGroupCheckboxes();
+
+    // Build response with clickable tags
+    let tagsHtml = '';
+    if (added.length) {
+      tagsHtml = '<div style="margin-top:8px;">' + added.map(a =>
+        `<span class="ai-added-tag" onclick="selectAIItem('${a.id}')" title="Click to select">${a.name}</span>`
+      ).join('') + '</div>';
+    }
+
+    const msg = (parsed.message || `Added ${added.length} item${added.length !== 1 ? 's' : ''} to the catalog.`) +
+      (added.length ? `<br><span style="font-size:10px;color:var(--muted)">Click any item below to select it:</span>${tagsHtml}` : '');
+
+    aiBotAddMessage('ai', msg);
+
+    if (added.length === 0) {
+      aiBotAddMessage('ai', 'No new items were added — they may already exist in the catalog. Try a more specific request.');
+    } else {
+      showToast(`✦ AI added ${added.length} item${added.length !== 1 ? 's' : ''} to catalog`);
+    }
+
+  } catch(err) {
+    aiBotRemoveTyping();
+    aiBotAddMessage('ai', '⚠️ Connection error. Please check your internet connection and try again.');
+    console.error('AI Bot error:', err);
+  }
+
+  aiBotBusy = false;
+  document.getElementById('ai-bot-send').disabled = false;
+}
+
+function selectAIItem(itemId) {
+  state.selected.add(itemId);
+  updateItemRow(itemId, true);
+  updateGroupCheckboxes();
+  state.activeIndustry = null;
+  updateIndustryBtnStates();
+  updateSummary();
+  renderSelected();
+  schedulePreviewUpdate();
+  showToast('Item selected');
+}
+
+// Allow Enter to send (Shift+Enter for newline)
+document.addEventListener('DOMContentLoaded', () => {
+  const inp = document.getElementById('ai-bot-input');
+  if (inp) {
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        aiBotSend();
+      }
+    });
+  }
+});
 
 /* ============================================================
    DASHBOARD NAVIGATION
