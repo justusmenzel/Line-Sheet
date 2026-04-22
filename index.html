@@ -1697,6 +1697,9 @@ body.light-mode .ai-added-tag { color: #1565C0; }
 body.light-mode #ai-key-input { background: #f8fafc; border-color: #c8d8ea; color: #0d1f35; }
 body.light-mode #ai-key-hint { color: #7a9abf; }
 </style>
+
+  <!-- PptxGenJS for PPTX export -->
+  <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
 </head>
 <body>
 
@@ -1761,7 +1764,8 @@ body.light-mode #ai-key-hint { color: #7a9abf; }
     <button id="theme-toggle" onclick="toggleTheme()" title="Toggle light / dark mode">☀️</button>
     <button class="btn btn-ghost" onclick="clearAll()">✕ Clear All</button>
     <button class="btn btn-outline" onclick="showTab('preview')">⊞ Preview</button>
-    <button class="btn btn-accent" onclick="printSheet()">⎙ Print / Export</button>
+    <button class="btn btn-outline" onclick="exportPPTX()" title="Export as PowerPoint">⬦ Export PPTX</button>
+    <button class="btn btn-accent" onclick="printSheet()">⎙ Print / PDF</button>
   </div>
 
   <!-- MAIN -->
@@ -4373,6 +4377,239 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+
+/* ============================================================
+   PPTX EXPORT
+   ============================================================ */
+function exportPPTX() {
+  if (state.selected.size === 0) { showToast("Select items first"); return; }
+  if (typeof PptxGenJS === "undefined") { showToast("PptxGenJS not loaded yet — try again"); return; }
+
+  showToast("Building PPTX…");
+
+  // ── Gather data ──────────────────────────────────────────────
+  const val       = id => (document.getElementById(id) || {}).value || "";
+  const company   = val("f-company");
+  const contact   = val("f-contact");
+  const jobTitle  = val("f-title");
+  const market    = val("f-market");
+  const rep       = val("f-rep");
+  const coName    = val("f-co-name") || "Delta Solutions";
+  const coEmail   = val("f-co-email")   || "info@deltasolutions.com";
+  const coWebsite = val("f-co-website") || "deltasolutions.com";
+  const today     = new Date().toLocaleDateString("en-US", { year:"numeric", month:"long", day:"numeric" });
+  const logoSrc   = state.logoDataUrl || "";
+
+  // Build grouped categories
+  const grouped = {};
+  state.selected.forEach(id => {
+    if (id === "why-delta-block") return;
+    const row = document.querySelector("[data-item-id='" + id + "']");
+    if (!row) return;
+    const catId = row.closest(".cat-group").dataset.catId;
+    if (!grouped[catId]) grouped[catId] = { name: row.dataset.catName || catId, icon: "", items: [] };
+    const cat = CATALOG.find(c => c.id === catId);
+    if (cat) cat.subcategories.forEach(sub => {
+      const found = sub.items.find(i => i.id === id);
+      if (found) grouped[catId].items.push(found);
+    });
+  });
+
+  const orderedCatIds = getOrderedCatalog()
+    .map(cat => cat.id)
+    .filter(id => grouped[id] && id !== "why-delta");
+
+  if (orderedCatIds.length === 0) { showToast("No items to export"); return; }
+
+  // ── Brand tokens ──────────────────────────────────────────────
+  const NAVY    = "1C2D4F";
+  const GOLD    = "C4A84A";
+  const BLUE    = "1565C0";
+  const BODY_BG = "f2f6fb";
+  const CARD_BG = "FFFFFF";
+  const CARD_BDR= "d8e4f0";
+  const CAT_BG  = "e8f0fa";
+  const NAVY_MID= "172030";
+  const TEXT_MID= "3d5a78";
+  const TEXT_SUB= "6a8aaa";
+  const WHITE   = "FFFFFF";
+
+  // Page geometry (US Letter: 8.5 x 11")
+  const HDR_H   = 0.95;
+  const STRIPE  = 0.05;
+  const CATBAR  = 0.28;
+  const FOOT_Y  = 10.68;
+  const CUST_H  = 0.30;
+  const ML      = 0.28;
+  const CW      = 3.97;
+  const CGAP    = 0.16;
+  const RGAP    = 0.14;
+  const COL1    = ML;
+  const COL2    = ML + CW + CGAP;
+  const BODY_P1 = HDR_H + STRIPE + CATBAR + CUST_H;
+  const BODY_PN = HDR_H + STRIPE + CATBAR;
+  const ROW_P1  = (FOOT_Y - BODY_P1 - RGAP) / 2;
+  const ROW_PN  = (FOOT_Y - BODY_PN - RGAP) / 2;
+
+  const mkShadow = () => ({ type:"outer", color:"1C2D4F", opacity:0.10, blur:8, offset:2, angle:135 });
+
+  // ── PptxGenJS ────────────────────────────────────────────────
+  const pres = new PptxGenJS();
+  pres.defineLayout({ name:"US_LETTER", width:8.5, height:11 });
+  pres.layout = "US_LETTER";
+
+  // ── Helpers ───────────────────────────────────────────────────
+  function addHeader(s, catLine) {
+    s.addShape(pres.ShapeType.rect, { x:0, y:0, w:8.5, h:HDR_H, fill:{color:NAVY}, line:{color:NAVY,width:0} });
+    s.addShape(pres.ShapeType.rect, { x:0, y:HDR_H, w:8.5, h:STRIPE, fill:{color:GOLD}, line:{color:GOLD,width:0} });
+    s.addShape(pres.ShapeType.rect, { x:0, y:HDR_H+STRIPE, w:8.5, h:CATBAR, fill:{color:CAT_BG}, line:{color:CARD_BDR,width:0.5} });
+    if (logoSrc) s.addImage({ data:logoSrc, x:0.20, y:0.07, w:2.5, h:0.81 });
+    else s.addText(coName, { x:0.22, y:0.25, w:3, h:0.45, fontSize:18, fontFace:"Calibri", bold:true, color:WHITE, margin:0 });
+    s.addText([
+      { text:coName + "  |  ", options:{ bold:true, color:WHITE } },
+      { text:"Quality · Expertise · Reliability", options:{ color:GOLD, italic:true } }
+    ], { x:3.0, y:0.18, w:5.2, h:0.28, fontSize:8.5, fontFace:"Calibri", align:"right", margin:0 });
+    s.addText(coEmail + "  ·  " + coWebsite, { x:3.0, y:0.50, w:5.2, h:0.22, fontSize:7.5, fontFace:"Calibri", color:"AABBD0", align:"right", margin:0 });
+    s.addText(catLine, { x:0.28, y:HDR_H+STRIPE+0.05, w:7.94, h:0.20, fontSize:7.5, fontFace:"Calibri", bold:true, color:NAVY, align:"center", margin:0 });
+  }
+
+  function addFooter(s) {
+    s.addShape(pres.ShapeType.rect, { x:0, y:FOOT_Y, w:8.5, h:0.32, fill:{color:NAVY}, line:{color:NAVY,width:0} });
+    s.addText("DELTA SOLUTIONS", { x:0.28, y:FOOT_Y+0.06, w:3.5, h:0.20, fontSize:6.5, fontFace:"Calibri", bold:true, color:"4a6a8a", charSpacing:2, margin:0 });
+    s.addText("Confidential  ·  All Rights Reserved", { x:4.7, y:FOOT_Y+0.06, w:3.5, h:0.20, fontSize:6.5, fontFace:"Calibri", color:"2a3f57", align:"right", margin:0 });
+  }
+
+  function addCustBar(s) {
+    const y = HDR_H + STRIPE + CATBAR;
+    s.addShape(pres.ShapeType.rect, { x:0, y, w:8.5, h:CUST_H, fill:{color:"eaf1fa"}, line:{color:CARD_BDR,width:0.5} });
+    const custParts = [];
+    if (company) custParts.push({ text:"PREPARED FOR:  ", options:{ color:TEXT_SUB,fontSize:7 } }, { text:company, options:{ bold:true,color:NAVY,fontSize:7.5 } });
+    if (contact) custParts.push({ text:"   " + contact + (jobTitle ? ", " + jobTitle : ""), options:{ color:TEXT_SUB, fontSize:7 } });
+    custParts.push({ text:"     DATE: ", options:{color:TEXT_SUB,fontSize:7} }, { text:today, options:{bold:true,color:NAVY,fontSize:7.5} });
+    if (rep) custParts.push({ text:"     REP: ", options:{color:TEXT_SUB,fontSize:7} }, { text:rep, options:{bold:true,color:NAVY,fontSize:7.5} });
+    s.addText(custParts, { x:0.28, y:y+0.07, w:7.94, h:0.20, fontFace:"Calibri", align:"left", margin:0 });
+  }
+
+  function addCard(s, x, y, w, h, title, items) {
+    s.addShape(pres.ShapeType.rect, { x:x+0.025, y:y+0.025, w, h, fill:{color:"dce8f4"}, line:{color:"dce8f4",width:0} });
+    s.addShape(pres.ShapeType.rect, { x, y, w, h, fill:{color:CARD_BG}, line:{color:CARD_BDR,width:0.75} });
+    s.addShape(pres.ShapeType.rect, { x, y, w, h:0.265, fill:{color:NAVY}, line:{color:NAVY,width:0} });
+    s.addShape(pres.ShapeType.rect, { x, y, w:0.055, h:0.265, fill:{color:GOLD}, line:{color:GOLD,width:0} });
+    s.addText(title, { x:x+0.12, y:y+0.04, w:w-0.18, h:0.20, fontSize:7.5, fontFace:"Calibri", bold:true, color:WHITE, margin:0 });
+    const runs = [];
+    items.forEach((item, i) => {
+      runs.push({ text:"▸  " + item.name, options:{ bold:true, color:NAVY, fontSize:8, fontFace:"Calibri" } });
+      if (item.desc) runs.push({ text:"\n     " + item.desc, options:{ color:TEXT_SUB, fontSize:6.8, fontFace:"Calibri", italic:true } });
+      if (i < items.length - 1) runs.push({ text:"\n", options:{ fontSize:3.5, breakLine:true } });
+    });
+    if (runs.length) s.addText(runs, { x:x+0.13, y:y+0.30, w:w-0.22, h:h-0.34, fontFace:"Calibri", valign:"top", margin:0 });
+  }
+
+  // ── Paginate catalog: 4 categories per page (2x2 grid) ────────
+  const CATS_PER_PAGE = 4;
+  const pages = [];
+  for (let i = 0; i < orderedCatIds.length; i += CATS_PER_PAGE) {
+    pages.push(orderedCatIds.slice(i, i + CATS_PER_PAGE));
+  }
+
+  const hasCustBar = !!(company || contact || market);
+
+  // ── SLIDE 1: Cover ────────────────────────────────────────────
+  {
+    const s = pres.addSlide();
+    s.background = { color:NAVY_MID };
+    s.addShape(pres.ShapeType.rect, { x:0, y:0, w:0.20, h:11, fill:{color:BLUE}, line:{color:BLUE,width:0} });
+    s.addShape(pres.ShapeType.rect, { x:0.20, y:0, w:0.055, h:11, fill:{color:GOLD}, line:{color:GOLD,width:0} });
+    if (logoSrc) s.addImage({ data:logoSrc, x:0.82, y:2.28, w:3.50, h:1.05 });
+    s.addText("CAPABILITIES LINE SHEET", { x:0.82, y:3.96, w:7.0, h:1.70, fontSize:36, fontFace:"Calibri", bold:true, color:WHITE, lineSpacingMultiple:1.05, margin:0 });
+    s.addText("Products · Services · Expertise", { x:0.82, y:5.82, w:5.5, h:0.36, fontSize:13, fontFace:"Calibri", italic:true, color:TEXT_SUB, margin:0 });
+    // Customer card
+    s.addShape(pres.ShapeType.rect, { x:0.82, y:7.60, w:6.76, h:1.72, fill:{color:"0d1828"}, line:{color:"2a3f57",width:0.75} });
+    s.addShape(pres.ShapeType.rect, { x:0.82, y:7.60, w:0.055, h:1.72, fill:{color:GOLD}, line:{color:GOLD,width:0} });
+    s.addText("PREPARED FOR", { x:0.96, y:7.72, w:3, h:0.22, fontSize:6.5, fontFace:"Calibri", color:GOLD, charSpacing:2.5, bold:true, margin:0 });
+    s.addText(company || "Customer Name", { x:0.96, y:7.96, w:6.45, h:0.40, fontSize:17, fontFace:"Calibri", bold:true, color:WHITE, margin:0 });
+    s.addText((contact ? contact + (jobTitle ? ", " + jobTitle : "") : "Contact Name  ·  Title"), { x:0.96, y:8.40, w:6.45, h:0.26, fontSize:8.5, fontFace:"Calibri", color:TEXT_SUB, margin:0 });
+    s.addText("Date: " + today + "     Rep: " + (rep || "_______________"), { x:0.96, y:8.70, w:6.45, h:0.22, fontSize:8, fontFace:"Calibri", color:"2a3f57", margin:0 });
+    s.addShape(pres.ShapeType.rect, { x:0, y:10.68, w:8.5, h:0.32, fill:{color:"08111a"}, line:{color:"08111a",width:0} });
+    s.addText(coEmail + "  ·  " + coWebsite + "  ·  Quality · Expertise · Reliability", { x:0.28, y:10.73, w:7.94, h:0.20, fontSize:6.5, fontFace:"Calibri", color:"1e3048", align:"center", margin:0 });
+  }
+
+  // ── SLIDES: Catalog content pages ────────────────────────────
+  pages.forEach((pageIds, pageIdx) => {
+    const s = pres.addSlide();
+    s.background = { color:BODY_BG };
+    const catNames = pageIds.map(id => grouped[id].name).join("  |  ");
+    addHeader(s, catNames);
+    addFooter(s);
+
+    const isFirst = (pageIdx === 0) && hasCustBar;
+    const bodyY = isFirst ? BODY_P1 : BODY_PN;
+    const rowH  = isFirst ? ROW_P1 : ROW_PN;
+
+    if (isFirst) addCustBar(s);
+
+    // Fill all 4 slots (some may be empty)
+    const positions = [
+      { x:COL1, y:bodyY },
+      { x:COL2, y:bodyY },
+      { x:COL1, y:bodyY + rowH + RGAP },
+      { x:COL2, y:bodyY + rowH + RGAP },
+    ];
+    pageIds.forEach((catId, i) => {
+      const { x, y } = positions[i];
+      const grp = grouped[catId];
+      addCard(s, x, y, CW, rowH, grp.name.toUpperCase(), grp.items);
+    });
+  });
+
+  // ── SLIDE: Why Delta Solutions ────────────────────────────────
+  {
+    const s = pres.addSlide();
+    s.background = { color:BODY_BG };
+    addHeader(s, "Why Delta Solutions");
+    addFooter(s);
+
+    s.addText("Committed to delivering industrial products and services with speed, expertise, and reliability.", {
+      x:0.50, y:1.38, w:7.50, h:0.48, fontSize:10.5, fontFace:"Calibri", color:TEXT_MID, align:"center", italic:true, margin:0
+    });
+
+    const highlights = [
+      { icon:"★", color:GOLD,  title:"Technical Expertise",    desc:"Deep product knowledge across all major brands. We understand your application." },
+      { icon:"⚡", color:BLUE,  title:"Speed of Supply",        desc:"Extensive inventory and supplier network. Emergency and same-day sourcing available." },
+      { icon:"⚙", color:NAVY,  title:"Rotork Specialists",     desc:"Certified MOV & actuator experts — sales, service, repair, and lifecycle management." },
+      { icon:"◈", color:BLUE,  title:"Custom Fabrication",     desc:"Vessels, skids, spools, and engineered packages built to your exact spec." },
+      { icon:"◉", color:GOLD,  title:"On-Site Support",        desc:"From vendor-managed inventory to field service teams — on your site." },
+      { icon:"✶", color:NAVY,  title:"Single Source Partner",  desc:"Products, services, fabrication, software, and logistics under one roof." },
+    ];
+
+    const GW=2.55, GH=3.65, GML=0.325, GCGAP=0.1475, GRGAP=0.14, GY0=1.96;
+    highlights.forEach((h, i) => {
+      const col = i % 3, row = Math.floor(i / 3);
+      const gx = GML + col*(GW+GCGAP), gy = GY0 + row*(GH+GRGAP);
+      s.addShape(pres.ShapeType.rect, { x:gx+0.022, y:gy+0.022, w:GW, h:GH, fill:{color:"dce8f4"}, line:{color:"dce8f4",width:0} });
+      s.addShape(pres.ShapeType.rect, { x:gx, y:gy, w:GW, h:GH, fill:{color:WHITE}, line:{color:CARD_BDR,width:0.75} });
+      s.addShape(pres.ShapeType.rect, { x:gx, y:gy, w:GW, h:0.055, fill:{color:h.color}, line:{color:h.color,width:0} });
+      s.addShape(pres.ShapeType.oval, { x:gx+0.14, y:gy+0.13, w:0.40, h:0.40, fill:{color:h.color}, line:{color:h.color,width:0} });
+      s.addText(h.icon, { x:gx+0.14, y:gy+0.10, w:0.40, h:0.44, fontSize:14, fontFace:"Calibri", color:WHITE, align:"center", valign:"middle", margin:0 });
+      s.addText(h.title, { x:gx+0.10, y:gy+0.60, w:GW-0.18, h:0.34, fontSize:9.5, fontFace:"Calibri", bold:true, color:NAVY, margin:0 });
+      s.addText(h.desc, { x:gx+0.10, y:gy+0.96, w:GW-0.18, h:GH-1.04, fontSize:7.8, fontFace:"Calibri", color:TEXT_MID, valign:"top", margin:0 });
+    });
+
+    const ctaY = FOOT_Y - 0.85 - 0.10;
+    s.addShape(pres.ShapeType.rect, { x:0, y:ctaY, w:8.5, h:0.85, fill:{color:NAVY}, line:{color:NAVY,width:0} });
+    s.addShape(pres.ShapeType.rect, { x:0, y:ctaY, w:0.10, h:0.85, fill:{color:GOLD}, line:{color:GOLD,width:0} });
+    s.addText("Ready to work together?", { x:0.28, y:ctaY+0.10, w:4.5, h:0.30, fontSize:12, fontFace:"Calibri", bold:true, color:WHITE, margin:0 });
+    s.addText(coEmail + "  ·  " + coWebsite, { x:0.28, y:ctaY+0.44, w:5, h:0.22, fontSize:8.5, fontFace:"Calibri", color:GOLD, margin:0 });
+    s.addText("CONTACT US  →", { x:5.8, y:ctaY+0.18, w:2.4, h:0.48, fontSize:11, fontFace:"Calibri", bold:true, color:GOLD, align:"right", valign:"middle", margin:0 });
+  }
+
+  // ── Write file ────────────────────────────────────────────────
+  const filename = (company ? company.replace(/[^a-zA-Z0-9]/g,"_") + "_" : "") + "Delta_Solutions_LineSheet.pptx";
+  pres.writeFile({ fileName: filename })
+    .then(() => showToast("✓ PPTX downloaded: " + filename))
+    .catch(e => { console.error(e); showToast("⚠ PPTX export failed"); });
+}
 
 /* ============================================================
    DASHBOARD NAVIGATION
