@@ -3538,7 +3538,7 @@ function renderPreview() {
 
   // Shared HTML fragments
   const logoHtml     = logoSrc ? `<img class="sheet-logo-img" src="${logoSrc}" alt="${coName}">` : `<div class="sheet-logo-placeholder">${coName}</div>`;
-  const catNames     = orderedCatIds.filter(id => id !== "why-delta").map(id => grouped[id].name);
+  const catNames     = orderedCatIds.filter(id => id !== "why-delta" && id !== "where-we-support").map(id => grouped[id].name);
   const hasCustomer  = company || contact || market;
   const contactLines = coContact.split("·").map(s => s.trim()).filter(Boolean);
   const contactHtml  = contactLines.join("<br>");
@@ -3547,7 +3547,7 @@ function renderPreview() {
     <div class="sheet-customer">
       ${company ? `<div class="cust-field"><span class="cust-value">${company}${contact ? `<span class="cust-value-sm">&nbsp;${contact}${jobTitle ? ", "+jobTitle : ""}</span>` : ""}</span></div>` : ""}
       ${market  ? `<div class="cust-field"><span class="cust-value">${market}</span></div>` : ""}
-      <div class="cust-field"><span class="cust-value">${state.selected.size}<span class="cust-value-sm">&nbsp;${orderedCatIds.length} items</span></span></div>
+      <div class="cust-field"><span class="cust-value">${state.selected.size}<span class="cust-value-sm">&nbsp;${orderedCatIds.filter(id => id !== "why-delta" && id !== "where-we-support").length} categories</span></span></div>
       <div class="cust-field"><span class="cust-value">${today}${rep ? `<span class="cust-value-sm">&nbsp;${rep}</span>` : ""}</span></div>
     </div>` : "";
 
@@ -3567,8 +3567,7 @@ function renderPreview() {
   const whereSupportHtml = (showWhere && whereItems.length > 0) ? `
     <div class="sheet-where">
       <div class="sheet-where-header">
-        <span class="sheet-where-eyebrow">Engagement Focus</span>
-        <span class="sheet-where-title">Where We Typically Support Clients</span>
+        <span class="sheet-where-title">Where We Support Clients</span>
       </div>
       <div class="sheet-where-grid">${whereItems.map(item => `
         <div class="sheet-where-item">
@@ -3603,7 +3602,7 @@ function renderPreview() {
   };
 
   const catMeta = orderedCatIds
-    .filter(id => id !== "why-delta")
+    .filter(id => id !== "why-delta" && id !== "where-we-support")
     .map(id => {
       const cat = CATALOG.find(x => x.id === id);
       return { id, name: grouped[id].name, count: grouped[id].items.length, type: cat ? cat.type : "product" };
